@@ -6,6 +6,7 @@ import moment from 'moment';
 import Divider from '../components/Divider';
 import HorizontalScrollCard from '../components/HorizontalScrollCard';
 import useFetch from '../hooks/useFetch';
+import VideoPlay from '../components/VideoPlay';
 const DetailsPage = () => {
   const params = useParams()
   const { data } = useFetchDetails(`/${params?.explore}/${params?.id}`)
@@ -16,6 +17,13 @@ const DetailsPage = () => {
   const duration = (data?.runtime / 60).toFixed(1).split('.')
   const writer = castData?.crew?.filter(item => item?.job === 'Writer').map(item => item.name).join(', ')
   const director = castData?.crew?.filter(item => item?.job === 'Director').map(item => item.name).join(', ')
+  const [playVideo, setPlayVideo] = React.useState(false)
+  const [playVideoId, setPlayVideoId] = React.useState()
+
+  const handlePlayVideo = (data) => {
+    setPlayVideoId(data)
+    setPlayVideo(true)
+  }
 
   return (
     <div>
@@ -35,6 +43,12 @@ const DetailsPage = () => {
             src={imageURL + data?.poster_path}
             className='w-60 h-80 object-cover rounded'
           />
+          <button
+            onClick={() => handlePlayVideo(data)}
+            className='mt-3 w-full py-2 px-4 text-center bg-white text-black rounded font-bold text-lg hover:bg-gradient-to-r from-red-500 to-orange-500'
+          >
+            Play Now
+          </button>
         </div>
 
         <div >
@@ -126,6 +140,15 @@ const DetailsPage = () => {
           heading={"Recommendation " + params?.explore}
           media_type={params?.explore}
         />
+        {
+          playVideo && (
+            <VideoPlay
+              data={playVideoId}
+              close={() => setPlayVideo(false)}
+              media_type={params?.explore}
+            />
+          )
+        }
       </div>
     </div>
   )
